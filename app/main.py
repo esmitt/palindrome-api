@@ -1,16 +1,12 @@
 from datetime import datetime
-from enum import EnumType
-
-from fastapi import FastAPI, Query, Depends, HTTPException, Body
+import schemas, crud, db
+from fastapi import FastAPI, Query, Depends, HTTPException
 from fastapi.responses import JSONResponse
-from palindrome import Palindrome, Language
-import schemas
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
-import crud, db
-from typing import List, Optional, Annotated
+from typing import List, Optional
 from contextlib import asynccontextmanager
-
+from language import Language
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -48,19 +44,20 @@ async def root():
 
 @app.post("/detect/", response_model=schemas.PalindromeResponse)
 async def check_palindrome(palindrome: schemas.PalindromeSchema, db: Session = Depends(get_db)):
-    is_palindrome = Palindrome(palindrome.text, palindrome.language).is_palindrome()
+    is_palindrome = palindrome.Palindrome(palindrome.text, palindrome.language).is_palindrome()
     db_item = crud.insert_detection(db, palindrome, is_palindrome)
 
     return schemas.PalindromeResponse(
         id=db_item.id,
         is_palindrome=db_item.is_palindrome,
+        language=db_item.language,
         timestamp=db_item.timestamp
     )
 
 @app.get("/detections", response_model=List[schemas.PalindromeQuery])
-async def get_detections_query(from_date: Optional[datetime] | Query(None, description="Filter by date (from)"),
-                               to_date: Optional[datetime] | Query(None, description="Filter by date (to)"),
-                               language: Optional[Language] | Query(None, description="Filter by language (EN, ES)"),
+async def get_detections_query(from_date: Optional[datetime] = Query(None, description="Filter by date (from)"),
+                               to_date: Optional[datetime] = Query(None, description="Filter by date (to)"),
+                               language: Optional[Language] = Query(None, description="Filter by language (EN, ES)"),
                                db: Session = Depends(get_db)):
     if from_date:
         try:
@@ -79,3 +76,15 @@ async def get_detections_query(from_date: Optional[datetime] | Query(None, descr
                                      to_date=to_date)
     return detections
 
+@app.get("/detections/{detection_id}", response_model=schemas.PalindromeQueryById)
+async def get_detections_query_by_id(detection_id: int,
+                                     db: Session = Depends(get_db)):
+    detection = crud.get_detection(db, detection_id)
+    if detection is None:
+        raise HTTPException(status_code=404, detail="Detection not found")
+
+    return schemas.PalindromeQueryById(id=detection.id,
+                                       is_palindrome=detection.is_palindrome,
+                                       language=detection.language,
+                                       text=detection.text,
+                                       timestamp=detection.timestamp)

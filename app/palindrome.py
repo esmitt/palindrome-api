@@ -1,10 +1,6 @@
 import string
 import unicodedata
-from enum import Enum
-
-class Language(Enum):
-    EN = "en"
-    ES = "es"
+from language import Language
 
 class Palindrome:
 

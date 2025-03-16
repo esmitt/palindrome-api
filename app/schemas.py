@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from palindrome import Language
+from language import Language
 from datetime import datetime
 
 class PalindromeBase(BaseModel):
@@ -9,16 +9,19 @@ class PalindromeBase(BaseModel):
 class PalindromeSchema(PalindromeBase):
     pass
 
-class PalindromeResponse(BaseModel):
+class PalindromeId(BaseModel):
     id: int
-    is_palindrome: bool = False
-    timestamp: datetime
-
-    class ConfigDict:
-        from_attributes = True
-
-class PalindromeQuery(BaseModel):
-    id: int
-    text: str
     timestamp: datetime
     language: Language
+
+class PalindromeResponse(PalindromeId):
+    is_palindrome: bool = False
+    model_config = {
+        "from_attributes": True
+    }
+
+class PalindromeQuery(PalindromeId):
+    text: str
+
+class PalindromeQueryById(PalindromeQuery):
+    is_palindrome: bool = False
