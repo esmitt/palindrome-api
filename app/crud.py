@@ -1,13 +1,9 @@
-from xmlrpc.client import DateTime
-
 from sqlalchemy.orm import Session
-from sqlalchemy import cast, String, Boolean
+from sqlalchemy import cast, String, Boolean, Integer
 
-from app.models import PalindromeRecord
-from app.schemas import PalindromeQuery
 from schemas import PalindromeSchema, PalindromeQuery
-from app import models
-from typing import List, Optional, Type
+import models
+from typing import Optional
 from datetime import datetime
 from palindrome import Language
 
@@ -24,9 +20,9 @@ def insert_detection(db: Session,
     return db_item
 
 def get_detections(db: Session,
-                   language: Optional[Language] | None,
-                   from_date: Optional[datetime] | None,
-                   to_date: Optional[datetime] | None) -> list[PalindromeQuery]:
+                   language: Optional[Language] = None,
+                   from_date: Optional[datetime] = None,
+                   to_date: Optional[datetime] = None) -> list[PalindromeQuery]:
     query = db.query(models.PalindromeRecord)
 
     # important: get words which are palindrome
@@ -48,3 +44,19 @@ def get_detections(db: Session,
             language=Language(record.language)
         ))
     return result
+
+def get_detection(db: Session,
+                  detection_id: int) -> Optional[models.PalindromeRecord]:
+    query = db.query(models.PalindromeRecord).filter(cast(models.PalindromeRecord.id, Integer) == detection_id)
+    return query.first()
+
+def delete_detection(db: Session,
+                     detection_id: int) -> bool:
+    query = db.query(models.PalindromeRecord).filter(cast(models.PalindromeRecord.id, Integer) == detection_id).first()
+
+    if query is None:
+        return False
+
+    db.delete(query)
+    db.commit()
+    return True

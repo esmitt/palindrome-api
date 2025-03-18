@@ -31,7 +31,7 @@ def test_non_palindrome_spanish():
 def test_palindrome_spanish():
     text = "Dábale arroz a la zorra el abad"
     assert Palindrome(text, Language.ES).is_palindrome() == True
-    text = "ába"
+    text = "ábá"
     assert Palindrome(text, Language.ES).is_palindrome() == True
     text = "    á     b    @#$$%$$%^&* a"
     assert Palindrome(text, Language.ES).is_palindrome() == True

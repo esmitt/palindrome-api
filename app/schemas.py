@@ -25,3 +25,7 @@ class PalindromeQuery(PalindromeId):
 
 class PalindromeQueryById(PalindromeQuery):
     is_palindrome: bool = False
+
+class DeleteResponse(BaseModel):
+    success: bool
+    message: str

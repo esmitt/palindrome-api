@@ -1,14 +1,17 @@
-from palindrome import Language
-from schemas import BaseModel
 from sqlalchemy.sql import func
-import db
+from db import get_base, get_engine
 from sqlalchemy import Column, Integer, String, DateTime, Boolean
 
-class PalindromeRecord(db.Base):
+Base = get_base()
+engine = get_engine()
+
+# Base.metadata.bind = engine
+
+class PalindromeRecord(Base):
     __tablename__ = "palindrome"
 
     id = Column(Integer, primary_key=True)
-    text = Column(String, nullable=False)
-    language = Column(String, index=True)
+    text = Column(String)
+    language = Column(String)
     timestamp = Column(DateTime(), server_default=func.now())
-    is_palindrome = Column(Boolean, default=False)
+    is_palindrome = Column(Boolean)

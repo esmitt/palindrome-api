@@ -6,14 +6,18 @@ import os
 load_dotenv()
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///../default.db")
 
-engine = create_engine(
-    DATABASE_URL,
-    connect_args={"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {}
-)
+def get_engine():
+    return create_engine(
+        DATABASE_URL,
+        connect_args={"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {}
+    )
+def get_base():
+    base = declarative_base()
+    print(f"get_base returning: {base}")
+    return base
 
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+def get_session_local(engine):
+    return sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-Base = declarative_base()
-
-def init_db():
-    Base.metadata.create_all(bind=engine)
+def init_db(engine, base):
+    base.metadata.create_all(bind=engine)
