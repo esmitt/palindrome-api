@@ -142,6 +142,17 @@ def test_get_nonexistent_detection(setup_database):
     assert "detail" in response.json()
 
 
+def test_get_all_records(setup_database):
+    client.post("/detect/", json={"text": ENGLISH_PALINDROME, "language": "en"})
+    client.post("/detect/", json={"text": SPANISH_PALINDROME, "language": "es"})
+    client.post("/detect/", json={"text": NOT_PALINDROME, "language": "en"})
+    client.post("/detect/", json={"text": NOT_PALINDROME, "language": "es"})
+
+    response = client.get("/all")
+    assert response.status_code == 200
+    data = response.json()
+    assert len(data) == 4
+
 def test_delete_detection(setup_database):
     user = {
         "text": ENGLISH_PALINDROME,
@@ -190,3 +201,9 @@ def test_date_filtering(setup_database):
     assert response.status_code == 200
     data = response.json()
     assert len(data) == 0
+
+def test_no_database():
+    response = client.post("/detect/", json={"text": ENGLISH_PALINDROME, "language": "en"})
+    assert response.status_code == 500
+    data = response.json()
+    assert data["info"] == "A database error occurred."

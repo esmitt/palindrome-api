@@ -1,14 +1,15 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import cast, String, Boolean, Integer
 
-from schemas import PalindromeSchema, PalindromeQuery
+from app.models import PalindromeRecord
+from schemas import PalindromeBase, PalindromeQuery
 import models
-from typing import Optional
+from typing import Optional, Type
 from datetime import datetime
 from palindrome import Language
 
 def insert_detection(db: Session,
-                     palindrome: PalindromeSchema,
+                     palindrome: PalindromeBase,
                      is_palindrome: bool) -> models.PalindromeRecord:
     # the timestamp is set at this point
     db_item = models.PalindromeRecord(text=palindrome.text,
@@ -44,6 +45,9 @@ def get_detections(db: Session,
             language=Language(record.language)
         ))
     return result
+
+def get_all(db: Session) -> list[Type[PalindromeRecord]]:
+    return db.query(models.PalindromeRecord).all()
 
 def get_detection(db: Session,
                   detection_id: int) -> Optional[models.PalindromeRecord]:

@@ -6,9 +6,6 @@ class PalindromeBase(BaseModel):
     text: str = Field(..., min_length=1, description="Text to check if is palindrome. This will be stored")
     language: Language = Field(default=Language.EN, description="Language of the text (EN, ES)")
 
-class PalindromeSchema(PalindromeBase):
-    pass
-
 class PalindromeId(BaseModel):
     id: int
     timestamp: datetime
@@ -25,6 +22,13 @@ class PalindromeQuery(PalindromeId):
 
 class PalindromeQueryById(PalindromeQuery):
     is_palindrome: bool = False
+
+class PalindromeFull(PalindromeId):
+    text: str
+    is_palindrome: bool = False
+
+# class PalindromeSchema(PalindromeBase):
+#     pass
 
 class DeleteResponse(BaseModel):
     success: bool

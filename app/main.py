@@ -8,7 +8,7 @@ from typing import List, Optional
 from contextlib import asynccontextmanager
 from palindrome import Palindrome
 
-from app.schemas import DeleteResponse
+from app.schemas import DeleteResponse, PalindromeFull
 from language import Language
 
 @asynccontextmanager
@@ -50,7 +50,7 @@ async def root():
     return {"Test": "esmitt"}
 
 @app.post("/detect/", response_model=schemas.PalindromeResponse)
-async def check_palindrome(palindrome: schemas.PalindromeSchema, db: Session = Depends(get_db)):
+async def check_palindrome(palindrome: schemas.PalindromeBase, db: Session = Depends(get_db)):
     is_palindrome = Palindrome(palindrome.text, palindrome.language).is_palindrome()
     db_item = crud.insert_detection(db, palindrome, is_palindrome)
 
@@ -72,6 +72,20 @@ async def get_detections_query(from_date: Optional[datetime] = Query(None, descr
                                      from_date=from_date,
                                      to_date=to_date)
     return detections
+
+@app.get("/all", response_model=List[schemas.PalindromeFull])
+async def get_all(db: Session = Depends(get_db)):
+
+    all_records = crud.get_all(db=db)
+    results = []
+    for record in all_records:
+        results.append(PalindromeFull(id=record.id,
+                                      is_palindrome=record.is_palindrome,
+                                      language=record.language,
+                                      text=record.text,
+                                      timestamp=record.timestamp))
+    return results
+
 
 @app.get("/detections/{detection_id}", response_model=schemas.PalindromeQueryById)
 async def get_detections_query_by_id(detection_id: int,
