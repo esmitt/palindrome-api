@@ -1,12 +1,13 @@
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
+from sqlalchemy.orm.session import Session
 from datetime import datetime, timedelta
 
-from app.main import app, get_db
-from app.models import Base  # Import Base directly from models
+from app.main import app
+from app.db.models import Base  # Import Base directly from models
+from app.db.base import init_db, get_session_local, get_db
 
 # in-memory SQLite for testing
 TEST_DATABASE_URL = "sqlite:///"
@@ -17,7 +18,8 @@ engine = create_engine(
     #echo=True
 )
 
-TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+#TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+TestingSessionLocal = get_session_local(engine)
 
 # override the dependency
 def override_get_db():
@@ -38,7 +40,7 @@ NOT_PALINDROME = "This is not a palindrome"
 
 @pytest.fixture(scope="function")
 def setup_database():
-    Base.metadata.create_all(bind=engine)
+    init_db(engine, Base)
     yield
     Base.metadata.drop_all(bind=engine)
 
@@ -207,3 +209,8 @@ def test_no_database():
     assert response.status_code == 500
     data = response.json()
     assert data["info"] == "A database error occurred."
+
+def test_get_db_yields_session():
+    db_generator = get_db()
+    db = next(db_generator)
+    assert isinstance(db, Session)

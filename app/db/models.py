@@ -1,11 +1,11 @@
-from sqlalchemy.sql import func
-from db import get_base, get_engine
 from sqlalchemy import Column, Integer, String, DateTime, Boolean
+from sqlalchemy.sql import func
+
+from app.db.base import get_base, get_engine
 
 Base = get_base()
 engine = get_engine()
 
-# Base.metadata.bind = engine
 
 class PalindromeRecord(Base):
     __tablename__ = "palindrome"

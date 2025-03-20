@@ -1,5 +1,4 @@
-import pytest
-from app.palindrome import Palindrome, Language
+from app.core.palindrome import Palindrome, Language
 
 def test_non_palindrome_english():
     text = "non-palindrome word"

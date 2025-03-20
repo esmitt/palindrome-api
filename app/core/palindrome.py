@@ -1,6 +1,9 @@
 import string
+
 import unicodedata
-from language import Language
+
+from app.schemas.enums import Language
+
 
 class Palindrome:
 
