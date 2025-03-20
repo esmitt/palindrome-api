@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime
 from typing import List, Optional
 
@@ -18,7 +19,7 @@ from app.schemas.palindrome import (
 )
 
 router = APIRouter()
-
+logger = logging.getLogger(__name__)
 
 @router.get("/")
 async def root():
@@ -52,15 +53,22 @@ async def get_detections_query(from_date: Optional[datetime] = Query(None, descr
 
 @router.get("/all", response_model=List[PalindromeFull])
 async def get_all(db: Session = Depends(get_db)):
-    all_records = crud.get_all(db=db)
-    results = []
-    for record in all_records:
-        results.append(PalindromeFull(id=record.id,
-                                      is_palindrome=record.is_palindrome,
-                                      language=record.language,
-                                      text=record.text,
-                                      timestamp=record.timestamp))
-    return results
+    try:
+        all_records = crud.get_all(db=db)
+        logger.info(f"Retrieved {len(all_records)} records from database")
+        results = []
+        for record in all_records:
+            logger.debug(f"Processing record: id={record.id}, language={record.language}")
+            results.append(PalindromeFull(id=record.id,
+                                          is_palindrome=record.is_palindrome,
+                                          language=Language(record.language),
+                                          text=record.text,
+                                          timestamp=record.timestamp))
+        logger.info("Successfully processed all records")
+        return results
+    except Exception as e:
+            logger.error(f"Error in get_all: {str(e)}")
+            raise
 
 
 @router.get("/detections/{detection_id}", response_model=PalindromeQueryById)
