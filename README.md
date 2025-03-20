@@ -61,7 +61,7 @@ The API handles language-specific features (such as Spanish accents) and provide
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/username/palindrome-api.git
+   git clone https://github.com/esmitt/palindrome-api.git
    cd palindrome-api
    ```
 
