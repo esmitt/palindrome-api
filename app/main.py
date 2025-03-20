@@ -12,12 +12,12 @@ from app.core.config import get_settings
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Init the database on startup
+    # init the database at startup
     engine = get_engine()
     base = get_base()
     init_db(engine=engine, base=base)
     yield
-    # Clean up
+    # clean up
     print("Application is shutting down. Cleaning up resources...")
 
 
@@ -25,12 +25,11 @@ app = FastAPI(
     title=get_settings().APP_NAME,
     description=get_settings().DESCRIPTION,
     version=get_settings().VERSION,
+    openapi_prefix=get_settings().API_PREFIX,
     lifespan=lifespan
 )
 
-# Include router
 app.include_router(api_router)
-
 
 # Handle any SQLAlchemy-related errors globally
 @app.exception_handler(SQLAlchemyError)

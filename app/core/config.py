@@ -12,17 +12,10 @@ class Settings(BaseModel):
     ENVIRONMENT: str = os.getenv("ENVIRONMENT", "production")
     DEBUG: bool = ENVIRONMENT == "development"
 
-    # Database settings
-    DATABASE_URL: str = os.getenv("DATABASE_URL", "sqlite:///../palindrome.db")
+    # other settings
+    DATABASE_URL: str = os.getenv("DATABASE_URL", "sqlite:///../default.db")
 
     API_PREFIX: str = "/api/v1"
-
-    CORS_ORIGINS: list[str] = ["*"]
-    CORS_METHODS: list[str] = ["*"]
-    CORS_HEADERS: list[str] = ["*"]
-
-    LOG_FORMAT: str = "%(levelprefix)s | %(asctime)s | %(message)s"
-    LOG_LEVEL: str = "INFO"
 
 
 @lru_cache()

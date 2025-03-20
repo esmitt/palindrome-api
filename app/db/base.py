@@ -8,7 +8,7 @@ from sqlalchemy.orm import declarative_base, sessionmaker, Session
 from app.core.config import get_settings
 
 load_dotenv()
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///../default.db")
+DATABASE_URL = get_settings().DATABASE_URL
 
 
 def get_engine():

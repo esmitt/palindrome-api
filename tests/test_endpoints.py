@@ -6,7 +6,7 @@ from sqlalchemy.orm.session import Session
 from datetime import datetime, timedelta
 
 from app.main import app
-from app.db.models import Base  # Import Base directly from models
+from app.db.models import Base  # Base from models (to work with the tests)
 from app.db.base import init_db, get_session_local, get_db
 
 # in-memory SQLite for testing
@@ -14,11 +14,9 @@ TEST_DATABASE_URL = "sqlite:///"
 engine = create_engine(
     TEST_DATABASE_URL,
     connect_args={"check_same_thread": False},
-    poolclass=StaticPool,
-    #echo=True
+    poolclass=StaticPool
 )
 
-#TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 TestingSessionLocal = get_session_local(engine)
 
 # override the dependency
