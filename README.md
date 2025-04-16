@@ -82,7 +82,7 @@ The API handles language-specific features (such as Spanish accents) and provide
    # ENVIRONMENT=production
    # DATABASE_URL=postgresql://user:password@db:5432/palindrome
    ```
-   > For the purpose of testing, the .env is in the repo
+   > For testing, the .env is in the repo
 
 ## Running the API
 
@@ -109,6 +109,11 @@ docker-compose logs -f
 docker-compose down
 ```
 
+### Online Deploy
+
+The code is deployed online in [Render.com](https://render.com/), you could check it [Live](https://palindrome-api-8xgs.onrender.com/docs)
+
+
 ## Testing
 
 ### Running Tests
@@ -119,7 +124,7 @@ Execute tests using pytest:
 pytest -vv
 ```
 
-If you are running the Docker, then:
+If you are running Docker, then:
 ```bash
 docker exec -it palindrome_api bash
 pytest -vv
@@ -223,9 +228,9 @@ palindrome-api/
 
 The algorithm for detection of a palindrome text is based on the two-pointer approach.
 
-This allows to get a `O(n)` even for preprocessing and detection.
+This allows for getting an `O(n)` even for preprocessing and detection.
 
-One possible "regular" option, could be something like:
+One possible "regular" option could be something like:
 ```python
 def is_palindrome(self) -> bool:
     cleaned_text = ''.join(char.lower() for char in self.text if char.isalnum())
